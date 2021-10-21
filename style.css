@@ -16,6 +16,7 @@
   border-radius: 10px;
   border: 1px solid #333;
   margin-top: 5px;
+  cursor: pointer;
 }
 #field{
   display: grid;
@@ -23,19 +24,21 @@
   height: 700px;
 }
 .box{
-  /* border-radius: 10px; */
+  font-size: 0px;
   border: 1px solid #333;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
+  cursor: pointer;
+  color: #00000000;
 }
 aside{
-  position: absolute;
+  position: fixed;
   top: 0;
   right: 0;
   height: 100%;
-  width: 300px;
+  width: 100px;
   display: none;
   flex-direction: column;
   align-items: center;
@@ -44,7 +47,7 @@ aside{
 }
 .aside-btn{
   width: 100px;
-  height: 20px;
+  height: 10%;
   border-radius: 10px;
   border: 1px solid #333;
   margin-bottom: 10px;
@@ -54,7 +57,7 @@ aside{
 .aside-btn:hover{
   transform: scale(110%);
 }
-.aside-btn:focus{
+.aside-btn:active{
   transform: scale(90%);
 }
 .disable{
@@ -77,4 +80,10 @@ aside{
 }
 .obs{
   background-color: #333;
+}
+#walk{
+  border: 5px solid green;
+}
+.no{
+  border-color: red!important;
 }
