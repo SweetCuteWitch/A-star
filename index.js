@@ -10,7 +10,7 @@ const input = (size) => {
   return matrix;
 }
 
-const fillMatrix = (start, end, obstacles, ) => {
+const fillMatrix = (start, end, obstacles) => {
   for (let i = 0; i < obstacles.length; i++) {
     matrix[obstacles[i][1]][obstacles[i][0]] = {flag: 'o'};
   }
@@ -54,20 +54,25 @@ const checkBuffer = (node) => {
 const checkNode = (currentNode, start) => {
   if (matrix[currentNode[1]])
     if (matrix[currentNode[1]][currentNode[0]]) {
-      // console.log(matrix[currentNode[1]][currentNode[0]], [currentNode[1],currentNode[0]])  
       if (matrix[currentNode[1]][currentNode[0]].flag == '-' || matrix[currentNode[1]][currentNode[0]].flag == 'e') {
         checkBuffer([
           getDistance(currentNode.concat(), startPoint) + getDistance(currentNode.concat(), endPoint), 
           currentNode.concat(),
-          start
+          start,
+          getDistance(currentNode.concat(), startPoint)
         ]);
+        if (matrix[currentNode[1]][currentNode[0]].flag == 'e' && start[0] === startPoint[0] && start[1] === startPoint[1]) {
+          trace.push([null, endPoint, startPoint]);
+          getTrace(trace[trace.length - 1])
+        }
       }
     }
+    
 }
 
-const calculateNode = (start) => {
+const calculateNode = (start, diagon) => {
   let currentNode = [];
-  const dots = [
+  let dots = diagon ? [
     [+start[0] - 1, +start[1]],
     [+start[0] - 1, +start[1] - 1],
     [+start[0], +start[1] - 1],
@@ -76,7 +81,13 @@ const calculateNode = (start) => {
     [+start[0] + 1, +start[1] + 1],
     [+start[0], +start[1] + 1],
     [+start[0] - 1, +start[1] + 1]
-  ]
+  ] :
+  [
+    [+start[0] - 1, +start[1]],
+    [+start[0], +start[1] - 1],
+    [+start[0] + 1, +start[1]],
+    [+start[0], +start[1] + 1],
+  ];
   for (let i = 0; i < dots.length; i++) {
     currentNode = dots[i];
     checkNode(currentNode, start);
@@ -106,49 +117,55 @@ const findClosest = (iteration) => {
   const closest = fCosts.sort(function(a, b) {
     return a - b;
   })[0];
-  const res = iteration.find( el => { 
-    if (el[0] === closest) {
-      return el[1];
+
+  const res = []
+  for (let i = 0; i < iteration.length; i++) {
+    if (iteration[i][0] === closest) {
+      res.push(iteration[i]);    
     }
-  })
-  try {
-    return res[1]
   }
-  catch {
-    alert('слышь говно собачье уебок вонючий что решил на меня лезть');
+  const eCosts = [];
+  for (let i = 0; i < res.length; i++) {
+    eCosts.push(res[i][3]);
+  }
+  const optimal = eCosts.sort(function(a, b) {
+    return a - b;
+  })[0];
+  for (let i = 0; i < res.length; i++) {
+    if (res[i][3] === optimal) {
+      try {
+        return res[i][1]    
+      }
+      catch {
+        alert('агде...');
+        render();
+        return;
+      }
+    }
   }
 }
 
 const findingCycle = (currentNode, end) => {
   if (currentNode[0] == end[0] && currentNode[1] == end[1]) {
-    res.push(endPoint, trace[trace.length - 1][1])
-    getTrace(trace[trace.length - 1]);
-    alert('priehali') 
+      res.push(endPoint, trace[trace.length - 1][1])
+      getTrace(trace[trace.length - 1]);
+      alert('priehali')
   }
   else {
-    calculateNode(currentNode);
-    // console.log(buffer);
+    calculateNode(currentNode, diagon);
     const nextNode = findClosest(buffer);
-    matrix[nextNode[1]][nextNode[0]] = {flag: 'w'};
-    render()
-    findingCycle(nextNode, end);
+    try {
+      matrix[nextNode[1]][nextNode[0]] = {flag: 'w'};
+      findingCycle(nextNode, end);
+    }
+    catch {
+      alert('агде...');
+      render();
+      return;
+    }
   }
 }
 
-const buffer = [];
-const trace = [];
-const res = [];
-
-
-
-
-
-
-
-// findingCycle(startPoint, endPoint);
-
-// res.reverse().map(el => {
-//   output(matrix);
-//   matrix[el[1]][el[0]] = {flag: 'c'}
-// })
-// output(matrix);
+let buffer = [];
+let trace = [];
+let res = [];
